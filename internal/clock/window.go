@@ -19,12 +19,15 @@ func NewCureWindow(clk Clock, duration time.Duration) *CureWindow {
 }
 
 func (w *CureWindow) Active(anchor time.Time) bool {
-	return WindowElapsed(w.clk, anchor, w.duration)
+	return ProcessWindowOpen(w.clk, anchor, w.duration)
 }
 
 func (w *CureWindow) Require(anchor time.Time) error {
-	if w.Active(anchor) {
+	if ProcessWindowOpen(w.clk, anchor, w.duration) {
 		return nil
+	}
+	if ProcessWindowClosed(w.clk, anchor, w.duration) {
+		return model.ErrBladderHold
 	}
 	return model.ErrBladderHold
 }
