@@ -27,9 +27,9 @@ func (f *CureFSM) State() model.DryState { return f.state }
 func (f *CureFSM) Dispatch(ctx context.Context, event string) (model.DryState, error) {
 	next, ok := allowedDry(f.state, event)
 	if !ok {
-		if f.hooks != nil {
-			_ = f.hooks.RunAfter(ctx, f.state, f.state, event)
-		}
+		// Illegal transition: state is unchanged, so the after hooks (which drive
+		// the execution side / valve pulses) must NOT run. Mirrors TowerFSM and
+		// FanFSM, which bail before invoking their side effect on rejection.
 		return f.state, fmt.Errorf("%s from %s: %w", event, f.state, ErrIllegalDryTransition)
 	}
 	from := f.state
