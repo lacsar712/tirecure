@@ -70,12 +70,20 @@ func WaitUntilContext(ctx context.Context, clk Clock, target time.Time) error {
 	}
 }
 
+// ProcessWindowOpen reports whether the process clock is still within the
+// [start, start+duration) window. It must read clk.Now() — not the wall clock
+// — so that freezing the process beat (no Step/Advance) also freezes the cure
+// window. Reading time.Since(start) here made the close-window progress crawl
+// forward on the workshop wall clock even while the beat was frozen.
 func ProcessWindowOpen(clk Clock, start time.Time, duration time.Duration) bool {
-	return time.Since(start) < duration
+	return clk.Now().Before(start.Add(duration))
 }
 
+// ProcessWindowClosed reports whether the process clock has passed the window
+// end. As with ProcessWindowOpen, the verdict is taken from clk.Now() so the
+// window state tracks the vulcanization process clock, not the wall clock.
 func ProcessWindowClosed(clk Clock, start time.Time, duration time.Duration) bool {
-	return time.Now().After(start.Add(duration))
+	return clk.Now().After(start.Add(duration))
 }
 
 func WindowElapsed(clk Clock, start time.Time, duration time.Duration) bool {
