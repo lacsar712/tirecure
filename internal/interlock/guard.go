@@ -24,7 +24,7 @@ func (g *Guard) Permit(zone model.ZoneID, plenum model.PlenumID) error {
 		return model.Wrap("interlock", "unknown_zone", model.ErrNotFound)
 	}
 	if want != plenum {
-		return fmt.Errorf("interlock plenum mismatch")
+		return model.Wrap("interlock", "plenum_mismatch", model.ErrInterlock)
 	}
 	return nil
 }
