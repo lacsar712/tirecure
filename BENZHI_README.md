@@ -1,6 +1,6 @@
-# tirecure
+# HookRelay
 
-Tire curing press thermal cycle control. No web UI.
+Signed ingress + reliable outbound webhook delivery (retry, circuit breaker, rate limit, DLQ, replay).
 
 ## Requirements
 
@@ -18,8 +18,12 @@ go build ./...
 
 ```bash
 export GOTOOLCHAIN=local
-go run ./cmd/graindry
+go run ./cmd/tirecure
 ```
+
+Open http://127.0.0.1:8080/
+
+Default ingest secret: `dev-ingest-secret`.
 
 ## Test
 
@@ -30,6 +34,16 @@ go test ./... -count=1
 
 ## Docker (benzhi)
 
+Must build **linux/amd64** and **linux/arm64**:
+
 ```bash
-./build_benzhi_docker.sh
+chmod +x build_benzhi_docker.sh
+./build_benzhi_docker.sh tirecure linux/amd64
+./build_benzhi_docker.sh tirecure linux/arm64
+docker run -it tirecure:latest
+# inside container:
+export GOTOOLCHAIN=local
+go version
+go build ./...
+go test ./... -count=1
 ```
