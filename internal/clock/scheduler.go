@@ -30,7 +30,11 @@ func (s *SegmentScheduler) InstallVentPlanCtx(ctx context.Context, settings Vent
 		steps = 60
 	}
 	for i := 0; i < steps; i++ {
-
+		select {
+		case <-ctx.Done():
+			return context.Cause(ctx)
+		default:
+		}
 		s.ventStepsDone = i + 1
 		s.clk.Step()
 		time.Sleep(2 * time.Millisecond)
