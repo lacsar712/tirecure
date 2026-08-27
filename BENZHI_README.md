@@ -1,6 +1,6 @@
-# HookRelay
+# tirecure
 
-Signed ingress + reliable outbound webhook delivery (retry, circuit breaker, rate limit, DLQ, replay).
+tirecure 是一套轮胎硫化车间工业过程控制系统，用于模腔温度、胶囊压力、硫化曲线与过程联锁。
 
 ## Requirements
 
