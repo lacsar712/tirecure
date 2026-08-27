@@ -17,6 +17,12 @@ func (a *App) CalibrateFeed(ctx context.Context, tower model.TowerID, holder str
 	if err := a.feedLeases.Require(tower, holder, 30*time.Second); err != nil {
 		return err
 	}
+	// The feed lease marks the bladder channel occupied for the duration of
+	// calibration. Release it on every exit so a probe fault cannot leave the
+	// occupancy bit latched: a held lease would otherwise block the downstream
+	// pressurize step (the TTL is moot here, as the process clock does not
+	// advance between the failed calibration and the next-day pressurize).
+	defer a.feedLeases.ReleaseHolder(tower, holder)
 	if CalibrateProbe != nil {
 		if err := CalibrateProbe(ctx); err != nil {
 			return fmt.Errorf("calibrate: %w", err)
